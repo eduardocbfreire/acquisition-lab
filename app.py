@@ -10,6 +10,8 @@ de change points. Este arquivo só monta a interface: a lógica vive em
 
 from __future__ import annotations
 
+import traceback
+
 import pandas as pd
 import streamlit as st
 
@@ -106,7 +108,10 @@ def _load_dataset(key: str) -> pd.DataFrame | None:
                 st.success(t("sidebar.rows_example", n=fmt_int(len(df))))
                 return df
         except CsvValidationError as exc:
-            st.error(t("sidebar.err_csv", name=name, detail=exc))
+            if exc.code:
+                st.error(t(f"err.{exc.code}", **exc.params))
+            else:
+                st.error(t("sidebar.err_csv", name=name, detail=str(exc)))
             return None
         except Exception as exc:  # rede de segurança no ponto de entrada
             st.error(t("sidebar.err_unexpected", name=name, detail=exc))
@@ -151,7 +156,13 @@ def main() -> None:
         "changepoints": lambda: changepoints.render(data),
         "sales": lambda: sales.render(data["sales"]),
     }
-    renderers[section]()
+    try:
+        renderers[section]()
+    except Exception:
+        # Nada de tela vermelha crua: mensagem amigável + detalhe técnico recolhido.
+        st.error(t("app.tab_error", name=t(f"tab.{section}")))
+        with st.expander(t("app.tab_error_detail")):
+            st.code(traceback.format_exc())
 
 
 if __name__ == "__main__":

@@ -22,7 +22,16 @@ DATA_DIR = os.path.join(
 
 
 class CsvValidationError(ValueError):
-    """Erro de formato de CSV, com mensagem voltada ao usuário."""
+    """Erro de formato de CSV, com mensagem voltada ao usuário.
+
+    ``code``/``params`` permitem que a camada de UI traduza a mensagem via i18n
+    (o ``ingest`` é puro e não conhece idioma). A mensagem em texto é o fallback.
+    """
+
+    def __init__(self, message: str, *, code: str | None = None, params: dict | None = None):
+        super().__init__(message)
+        self.code = code
+        self.params = params or {}
 
 
 def _read_raw(source: str | IO[bytes] | IO[str]) -> pd.DataFrame:
@@ -42,9 +51,12 @@ def _coerce_and_validate(df: pd.DataFrame, schema: DatasetSchema) -> pd.DataFram
 
     missing = [c for c in schema.required_names if c not in df.columns]
     if missing:
+        cols = ", ".join(missing)
         raise CsvValidationError(
-            f"colunas obrigatórias ausentes para '{schema.title}': {missing}. "
-            f"Esperado o cabeçalho: {schema.header_example}"
+            f"colunas ausentes em '{schema.title}': {cols}. Cabeçalho esperado: "
+            f"{schema.header_example}",
+            code="missing_column",
+            params={"col": cols, "dataset": schema.title},
         )
 
     if len(df) == 0:
@@ -55,20 +67,24 @@ def _coerce_and_validate(df: pd.DataFrame, schema: DatasetSchema) -> pd.DataFram
     for col in schema.columns:
         if col.kind == "datetime":
             parsed = pd.to_datetime(df[col.name], errors="coerce")
-            n_bad = int(parsed.isna().sum())
-            if n_bad > 0:
+            if parsed.isna().any():
+                example = df.loc[parsed.isna(), col.name].iloc[0]
                 raise CsvValidationError(
-                    f"'{schema.title}': coluna '{col.name}' tem {n_bad} valor(es) "
-                    f"que não são datas válidas (esperado algo como '2026-01-15')."
+                    f"'{schema.title}': coluna '{col.name}' tem valores que não são "
+                    f"datas (ex.: '{example}').",
+                    code="bad_dates",
+                    params={"col": col.name, "value": example},
                 )
             df[col.name] = parsed
         elif col.kind == "numeric":
             parsed = pd.to_numeric(df[col.name], errors="coerce")
-            n_bad = int(parsed.isna().sum())
-            if n_bad > 0:
+            if parsed.isna().any():
+                example = df.loc[parsed.isna(), col.name].iloc[0]
                 raise CsvValidationError(
-                    f"'{schema.title}': coluna '{col.name}' tem {n_bad} valor(es) "
-                    f"não numéricos."
+                    f"'{schema.title}': coluna '{col.name}' tem valores que não são "
+                    f"números (ex.: '{example}').",
+                    code="not_numeric",
+                    params={"col": col.name, "value": example},
                 )
             df[col.name] = parsed
         else:  # str

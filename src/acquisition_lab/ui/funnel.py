@@ -42,6 +42,10 @@ def render(df: pd.DataFrame | None) -> None:
 
     res = compute_funnel(df, step_order, maturation_days=maturation)
 
+    if res.n_entered == 0:
+        st.warning(t("err.empty_after_filters"))
+        return
+
     if res.n_excluded_immature > 0:
         st.info(t("funnel.excluded_info", n=fmt_int(res.n_excluded_immature), days=maturation))
 

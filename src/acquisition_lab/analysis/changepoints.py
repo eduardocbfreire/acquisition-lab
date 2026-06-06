@@ -125,25 +125,38 @@ def detect_change_points(
     def beta(mult: float) -> float:
         return mult * d * sigma2 * math.log(n)
 
-    pen = beta(k)
-    raw_bkps = _predict(work, model, min_size, jump, pen)
+    # O custo "linear" do ruptures exige sinal 2D (série + regressor de tempo);
+    # os demais custos operam na série 1D.
+    if model == "linear":
+        predict_signal = np.column_stack([work, np.arange(n)])
+    else:
+        predict_signal = work
 
-    # Filtro de magnitude: salto de média entre segmentos vizinhos >= limiar.
-    threshold = min_magnitude_mad * mad_diffs if math.isfinite(mad_diffs) else 0.0
-    bounds = [0] + raw_bkps + [n]
+    pen = beta(k)
+    raw_bkps = _predict(predict_signal, model, min_size, jump, pen)
+
+    # Filtro de magnitude: só faz sentido para mudança de NÍVEL (l2), comparando
+    # a média dos segmentos vizinhos. Para "normal" (variância) e "linear"
+    # (tendência) as médias podem ser parecidas mesmo numa quebra real, então o
+    # filtro não se aplica.
     kept: list[int] = []
     dropped_low: list[int] = []
-    for i, bkp in enumerate(raw_bkps):
-        left = signal[bounds[i] : bounds[i + 1]]
-        right = signal[bounds[i + 1] : bounds[i + 2]]
-        jump_mag = abs(float(np.mean(right)) - float(np.mean(left)))
-        if jump_mag >= threshold:
-            kept.append(bkp)
-        else:
-            dropped_low.append(bkp)
+    if model == "l2":
+        threshold = min_magnitude_mad * mad_diffs if math.isfinite(mad_diffs) else 0.0
+        bounds = [0] + raw_bkps + [n]
+        for i, bkp in enumerate(raw_bkps):
+            left = signal[bounds[i] : bounds[i + 1]]
+            right = signal[bounds[i + 1] : bounds[i + 2]]
+            jump_mag = abs(float(np.mean(right)) - float(np.mean(left)))
+            if jump_mag >= threshold:
+                kept.append(bkp)
+            else:
+                dropped_low.append(bkp)
+    else:
+        kept = list(raw_bkps)
 
     # Teste de estabilidade: re-roda com k mais alto e mantém pontos próximos.
-    stable_bkps = _predict(work, model, min_size, jump, beta(stability_k))
+    stable_bkps = _predict(predict_signal, model, min_size, jump, beta(stability_k))
     persistent: list[int] = []
     dropped_unstable: list[int] = []
     for bkp in kept:

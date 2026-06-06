@@ -97,8 +97,17 @@ non-specialists.
 
 ## Screenshots
 
-Interface images live in `docs/screenshots/`. To produce yours: run the app, open
-the Overview tab with the example data and save a screenshot to that folder.
+![Overview tab](docs/screenshots/overview.png)
+*Overview: the headline number from every screen, each with its interval and n.*
+
+![Funnel tab](docs/screenshots/funnel.png)
+*Funnel: step-to-step conversion over unique people, with Wilson 95% intervals.*
+
+![Change points tab](docs/screenshots/changepoints.png)
+*Change points: weekly CAC with the level shift detected automatically.*
+
+![Sales tab](docs/screenshots/sales.png)
+*Sales: average order value with the full vs. simplified margin compared side by side.*
 
 ---
 

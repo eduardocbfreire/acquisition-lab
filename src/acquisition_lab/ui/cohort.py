@@ -23,7 +23,7 @@ def render(df: pd.DataFrame | None) -> None:
     with col1:
         gran = st.selectbox(
             t("cohort.gran_label"),
-            options=["W", "D", "M"],
+            options=["W", "M"],
             index=0,
             format_func=lambda g: t(f"cohort.gran.{g}"),
         )

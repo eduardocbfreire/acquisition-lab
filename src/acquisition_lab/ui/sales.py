@@ -23,11 +23,10 @@ def render(df: pd.DataFrame | None) -> None:
         missing_data_note(t("ds.sales"))
         return
 
-    run_boot = st.checkbox(t("sales.boot_label"), value=False, help=t("sales.boot_help"))
-    n_boot = 10000 if run_boot else 1
-    res = average_order_value(df, run_bootstrap=run_boot, n_boot=n_boot)
+    res = average_order_value(df)
     est = res.estimate
 
+    # 1. Cards de métricas
     c1, c2, c3 = st.columns(3)
     c1.metric(t("sales.metric.aov"), fmt_brl(est.ratio), help=t("sales.metric.aov.help"))
     c1.caption(
@@ -45,21 +44,21 @@ def render(df: pd.DataFrame | None) -> None:
         help=t("sales.metric.se_naive.help"),
     )
 
+    # 2. Comparação das margens
     st.plotly_chart(plot_ratio_intervals(res), use_container_width=True)
 
-    if est.cov_xy > 0 and est.se < est.se_naive:
-        st.info(t("sales.info_cov_reduces"))
-    else:
-        st.info(t("sales.info_cov_generic"))
+    # 3. Toggle do bootstrap
+    run_boot = st.checkbox(t("sales.boot_label"), value=False, help=t("sales.boot_help"))
 
-    # Distribuição do ticket por usuário (de onde a média sai).
+    # 4. Distribuição do ticket por usuário (de onde a média sai)
     tickets = per_user_ticket(df)
     st.plotly_chart(plot_ticket_distribution(tickets, est), use_container_width=True)
     st.caption(t("sales.dist_caption"))
 
-    # Bootstrap: distribuição das estimativas reamostradas vs IC do delta method.
-    if res.bootstrap is not None:
-        bp, blo, bhi = res.bootstrap
+    # 4b. Distribuição do bootstrap, quando ligado
+    if run_boot:
+        boot_res = average_order_value(df, run_bootstrap=True, n_boot=10000)
+        bp, blo, bhi = boot_res.bootstrap
         st.caption(
             t(
                 "sales.boot_caption",
@@ -68,9 +67,16 @@ def render(df: pd.DataFrame | None) -> None:
                 hi=fmt_brl(bhi, markdown=True),
             )
         )
-        st.plotly_chart(plot_bootstrap_distribution(res), use_container_width=True)
+        st.plotly_chart(plot_bootstrap_distribution(boot_res), use_container_width=True)
         st.caption(t("sales.boot_dist_caption"))
 
+    # 5. Leitura sobre a covariância, abaixo da distribuição
+    if est.cov_xy > 0 and est.se < est.se_naive:
+        st.info(t("sales.info_cov_reduces"))
+    else:
+        st.info(t("sales.info_cov_generic"))
+
+    # 6. Amostra dos dados
     st.subheader(t("sales.sample_subheader"))
     st.dataframe(df.head(20), use_container_width=True, hide_index=True)
 

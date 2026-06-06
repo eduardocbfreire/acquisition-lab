@@ -50,8 +50,8 @@ def build_retention_matrix(
     missing = required - set(df.columns)
     if missing:
         raise ValueError(f"coorte exige {sorted(required)}; faltam {sorted(missing)}")
-    if granularity not in {"W", "D", "M"}:
-        raise ValueError("granularity deve ser 'W', 'D' ou 'M'")
+    if granularity not in {"W", "M"}:
+        raise ValueError("granularity deve ser 'W' (semana) ou 'M' (mês)")
 
     df = df.copy()
     df["signup_date"] = pd.to_datetime(df["signup_date"])
@@ -59,7 +59,7 @@ def build_retention_matrix(
     if observation_end is None:
         observation_end = df["activity_date"].max()
 
-    period_days = {"D": 1, "W": 7, "M": 30}[granularity]
+    period_days = {"W": 7, "M": 30}[granularity]
 
     # Coorte: âncora do período de signup (início do período).
     df["cohort"] = df["signup_date"].dt.to_period(granularity).dt.start_time

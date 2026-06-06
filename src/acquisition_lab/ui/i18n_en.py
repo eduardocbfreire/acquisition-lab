@@ -5,6 +5,8 @@ from __future__ import annotations
 EN: dict[str, str] = {
     # App / header
     "app.title": "Acquisition Lab",
+    "app.tab_error": "Unexpected error on the {name} tab. Reach out to Eduardo for a fix.",
+    "app.tab_error_detail": "Technical detail",
     "app.caption": "Local acquisition analysis: funnel, cohort, media and sales. "
     "Every rate comes with a margin of uncertainty and the number of cases.",
     # Sidebar
@@ -18,6 +20,11 @@ EN: dict[str, str] = {
     "sidebar.rows_example": "{n} rows (example).",
     "sidebar.err_csv": "Problem in the {name} CSV: {detail}",
     "sidebar.err_unexpected": "Unexpected error reading {name}: {detail}",
+    "err.missing_column": "Could not find the '{col}' column in the {dataset} file. "
+    "Check the header — the expected format is in the README.",
+    "err.bad_dates": "The '{col}' column has values that are not dates (e.g. '{value}').",
+    "err.not_numeric": "The '{col}' column has values that are not numbers (e.g. '{value}').",
+    "err.empty_after_filters": "No rows are left with the current filters.",
     # Streamlit's built-in uploader text, translated via CSS
     "uploader.drag": "Drag and drop file here",
     "uploader.limit": "Limit 200 MB per file • CSV",
@@ -113,7 +120,6 @@ EN: dict[str, str] = {
     "happened yet, they are not zero.",
     "cohort.gran_label": "Group by",
     "cohort.gran.W": "Week",
-    "cohort.gran.D": "Day",
     "cohort.gran.M": "Month",
     "cohort.periods_label": "Periods (0 to N)",
     "cohort.warn": "Do not compare cells of different ages: recent groups have less "
@@ -168,8 +174,10 @@ EN: dict[str, str] = {
     "cp.minsize_help": "Minimum number of points (days or weeks, depending on the "
     "series) between two changes. Keeps a short wobble from being marked as a change.",
     "cp.detrend_label": "Remove trend first",
-    "cp.detrend_help": "Removes the background trend before looking for steps. Use it "
-    "when the series climbs or falls continuously.",
+    "cp.detrend_help": "When the series climbs or falls continuously (e.g. spend "
+    "growing every month), the detector mistakes that slope for several level "
+    "shifts. Removing the trend strips that background ramp and leaves only the real "
+    "steps visible. Turn it on if the series has a clear long-term direction.",
     "cp.metric.cps": "Change points",
     "cp.metric.sigma": "Estimated noise",
     "cp.metric.sigma.help": "How much the series normally wiggles. It is the "
@@ -179,7 +187,7 @@ EN: dict[str, str] = {
     "Higher = more conservative.",
     "cp.dropped_mag": "Skipped for a small jump: {n}",
     "cp.dropped_unstable": "Skipped for not holding up under a stricter test: {n}",
-    "cp.min_points": "Needs at least {min} points; this series has {n}.",
+    "cp.min_points": "This dataset has {n} points; detection needs at least {min}.",
     "cp.spinner": "Looking for change points…",
     "cp.ref.ruptures": "Docs for **ruptures**, the library behind the detection — worth "
     "a look at its examples and parameters "
@@ -201,14 +209,12 @@ EN: dict[str, str] = {
     "sales.metric.aov": "Average order value (revenue / orders)",
     "sales.metric.aov.help": "How much each order is worth, on average. The 95% "
     "interval is the margin of uncertainty.",
-    "sales.metric.se": "Margin (done right)",
-    "sales.metric.se.help": "Typical size of the estimate's error, accounting for "
-    "revenue and order count moving together. This is the margin to trust.",
-    "sales.metric.se_naive": "Margin (naive way)",
-    "sales.metric.se_naive.help": "What you would get treating the order count as "
-    "fixed, ignoring that revenue and orders move together. Since they are usually "
-    "positively correlated, this margin comes out distorted. It is here only to show "
-    "how big that error is.",
+    "sales.metric.se": "Full margin",
+    "sales.metric.se.help": "Accounts for revenue and orders moving together (a "
+    "technique known as the delta method).",
+    "sales.metric.se_naive": "Simplified margin",
+    "sales.metric.se_naive.help": "Treats the order count as fixed, ignoring that "
+    "revenue and orders move together — shown for comparison.",
     "sales.info_cov_reduces": "Revenue and orders move together: people who order "
     "more spend more. Accounting for that makes the margin narrower than the naive "
     "way suggests. With other data it can go the other way — the point is not to "
@@ -251,8 +257,8 @@ EN: dict[str, str] = {
     "viz.sales.title": "Average order value = {ratio} · 95% interval by method",
     "viz.sales.compare_xaxis": "average order value (R$)",
     "viz.sales.compare_hover": "AOV {ratio} · margin ±{half}",
-    "viz.sales.method.delta": "Delta method (with covariance)",
-    "viz.sales.method.naive": "Naive (ignores covariance)",
+    "viz.sales.method.delta": "Full margin",
+    "viz.sales.method.naive": "Simplified margin",
     "viz.sales.dist.title": "Per-user order value distribution",
     "viz.sales.dist.xaxis": "order value per user (R$)",
     "viz.sales.dist.yaxis": "users",

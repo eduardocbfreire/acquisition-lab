@@ -13,6 +13,8 @@ PT: dict[str, str] = {
     "app.title": "Acquisition Lab",
     "app.caption": "Análise de aquisição local: funil, coorte, mídia e vendas. "
     "Toda taxa vem com margem de incerteza e o número de casos.",
+    "app.tab_error": "Erro não identificado na aba {name}. Fale com Eduardo para ajuste.",
+    "app.tab_error_detail": "Detalhe técnico",
     # Sidebar
     "sidebar.data_title": "Dados",
     "sidebar.data_caption": "Suba seus arquivos CSV ou use os dados de exemplo. "
@@ -24,6 +26,11 @@ PT: dict[str, str] = {
     "sidebar.rows_example": "{n} linhas (exemplo).",
     "sidebar.err_csv": "Problema no CSV de {name}: {detail}",
     "sidebar.err_unexpected": "Erro inesperado ao ler {name}: {detail}",
+    "err.missing_column": "Não foi possível encontrar a coluna '{col}' no arquivo de "
+    "{dataset}. Confira o cabeçalho — o formato esperado está no README.",
+    "err.bad_dates": "A coluna '{col}' tem valores que não são datas (ex.: '{value}').",
+    "err.not_numeric": "A coluna '{col}' tem valores que não são números (ex.: '{value}').",
+    "err.empty_after_filters": "Nenhuma linha restou com os filtros atuais.",
     # Textos embutidos do uploader do Streamlit, traduzidos via CSS
     "uploader.drag": "Arraste e solte o arquivo aqui",
     "uploader.limit": "Limite de 200 MB por arquivo • CSV",
@@ -115,7 +122,6 @@ PT: dict[str, str] = {
     "branco ainda não aconteceram, não são zero.",
     "cohort.gran_label": "Agrupar por",
     "cohort.gran.W": "Semana",
-    "cohort.gran.D": "Dia",
     "cohort.gran.M": "Mês",
     "cohort.periods_label": "Períodos (0 a N)",
     "cohort.warn": "Não compare células com idades diferentes: grupos recentes têm "
@@ -173,8 +179,10 @@ PT: dict[str, str] = {
     "cp.minsize_help": "Número mínimo de pontos (dias ou semanas, conforme a série) "
     "entre duas mudanças. Evita marcar oscilação curta como mudança.",
     "cp.detrend_label": "Remover tendência antes",
-    "cp.detrend_help": "Remove a tendência de fundo antes de procurar degraus. Use "
-    "quando a série sobe ou desce continuamente.",
+    "cp.detrend_help": "Quando a série sobe ou desce continuamente (ex.: gasto "
+    "crescendo todo mês), o detector confunde a subida com várias mudanças de "
+    "patamar. Remover a tendência tira essa rampa de fundo e deixa visíveis só os "
+    "degraus reais. Ligue se a série tem direção clara de longo prazo.",
     "cp.metric.cps": "Pontos de mudança",
     "cp.metric.sigma": "Ruído estimado",
     "cp.metric.sigma.help": "O quanto a série treme normalmente. Serve de régua para "
@@ -184,7 +192,7 @@ PT: dict[str, str] = {
     "Mais alto = mais conservador.",
     "cp.dropped_mag": "Ignorados por salto pequeno: {n}",
     "cp.dropped_unstable": "Ignorados por não se repetirem num critério mais " "exigente: {n}",
-    "cp.min_points": "Precisa de pelo menos {min} pontos; esta série tem {n}.",
+    "cp.min_points": "Esta base tem {n} pontos; a detecção precisa de pelo menos {min}.",
     "cp.spinner": "Procurando pontos de mudança…",
     "cp.ref.ruptures": "Documentação do **ruptures**, a biblioteca por trás da "
     "detecção — vale ver os exemplos e parâmetros "
@@ -206,14 +214,12 @@ PT: dict[str, str] = {
     "sales.metric.aov": "Ticket médio (receita / pedidos)",
     "sales.metric.aov.help": "Quanto rende cada pedido, em média. O intervalo de 95% "
     "é a margem de incerteza.",
-    "sales.metric.se": "Margem (forma correta)",
-    "sales.metric.se.help": "Tamanho típico do erro da estimativa, levando em conta "
-    "que receita e número de pedidos variam juntos. É a margem em que confiar.",
-    "sales.metric.se_naive": "Margem (forma ingênua)",
-    "sales.metric.se_naive.help": "O que daria tratando o número de pedidos como fixo, "
-    "ignorando que receita e pedidos variam juntos. Como costumam ser positivamente "
-    "correlacionados, essa margem sai distorcida. Está aqui só para mostrar o tamanho "
-    "do erro de ignorar isso.",
+    "sales.metric.se": "Margem completa",
+    "sales.metric.se.help": "Considera que receita e pedidos variam juntos (técnica "
+    "conhecida como método delta).",
+    "sales.metric.se_naive": "Margem simplificada",
+    "sales.metric.se_naive.help": "Trata o nº de pedidos como fixo, ignorando que "
+    "receita e pedidos variam juntos — mostrada para comparação.",
     "sales.info_cov_reduces": "Receita e pedidos andam juntos: quem faz mais pedidos "
     "gasta mais. Levar isso em conta deixa a margem mais estreita do que a forma "
     "ingênua sugere. Em outros dados pode ser o contrário — o importante é não "
@@ -256,8 +262,8 @@ PT: dict[str, str] = {
     "viz.sales.title": "Ticket médio = {ratio} · intervalo de 95% por método",
     "viz.sales.compare_xaxis": "ticket médio (R$)",
     "viz.sales.compare_hover": "Ticket {ratio} · margem ±{half}",
-    "viz.sales.method.delta": "Delta method (com covariância)",
-    "viz.sales.method.naive": "Ingênua (ignora covariância)",
+    "viz.sales.method.delta": "Margem completa",
+    "viz.sales.method.naive": "Margem simplificada",
     "viz.sales.dist.title": "Distribuição do ticket por usuário",
     "viz.sales.dist.xaxis": "ticket por usuário (R$)",
     "viz.sales.dist.yaxis": "usuários",

@@ -97,8 +97,17 @@ São seis abas. Cada uma abre com um "Como ler esta tela?" para quem não é da 
 
 ## Screenshots
 
-As imagens da interface ficam em `docs/screenshots/`. Para gerar a sua: rode o
-app, abra a aba "Visão geral" com os dados de exemplo e salve um print nessa pasta.
+![Aba Visão geral](docs/screenshots/overview.png)
+*Visão geral: o número principal de cada tela, cada um com seu intervalo e n.*
+
+![Aba Funil](docs/screenshots/funnel.png)
+*Funil: conversão por etapa sobre pessoas únicas, com intervalos de Wilson 95%.*
+
+![Aba Pontos de mudança](docs/screenshots/changepoints.png)
+*Pontos de mudança: CAC semanal com o salto de patamar detectado automaticamente.*
+
+![Aba Vendas](docs/screenshots/sales.png)
+*Vendas: ticket médio com a margem completa e a simplificada lado a lado.*
 
 ---
 

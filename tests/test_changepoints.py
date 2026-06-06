@@ -41,6 +41,19 @@ def test_magnitude_filter_drops_tiny_jumps():
     assert len(res.indices) == 0
 
 
+def test_linear_cost_detects_trend_change():
+    # Custo "linear" exige sinal 2D internamente; antes quebrava com assert ndim>1.
+    rng = np.random.default_rng(4)
+    t1 = np.arange(60)
+    up = 0.5 * t1 + rng.normal(0, 1.0, size=60)  # rampa subindo
+    down = up[-1] - 0.5 * np.arange(1, 61) + rng.normal(0, 1.0, size=60)  # rampa descendo
+    signal = np.concatenate([up, down])
+    res = detect_change_points(signal, model="linear")
+    assert res.enabled
+    # A virada de tendência fica perto do índice 60.
+    assert any(abs(i - 60) <= 6 for i in res.indices)
+
+
 def test_higher_k_is_more_conservative():
     rng = np.random.default_rng(3)
     signal = np.concatenate([rng.normal(0, 1, 40), rng.normal(5, 1, 40), rng.normal(0, 1, 40)])

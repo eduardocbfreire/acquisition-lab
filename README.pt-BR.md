@@ -41,9 +41,9 @@ Para quem nunca usou. Você precisa de Python 3.11 ou mais novo.
    python -m venv .venv
    .venv\Scripts\Activate.ps1
    ```
-3. Instale as dependências:
+3. Instale o app e as dependências:
    ```bash
-   pip install -r requirements.txt
+   pip install -e .
    ```
 4. Rode o app:
    ```bash

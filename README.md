@@ -41,9 +41,9 @@ For first-time users. You need Python 3.11 or newer.
    python -m venv .venv
    .venv\Scripts\Activate.ps1
    ```
-3. Install the dependencies:
+3. Install the app and its dependencies:
    ```bash
-   pip install -r requirements.txt
+   pip install -e .
    ```
 4. Run the app:
    ```bash

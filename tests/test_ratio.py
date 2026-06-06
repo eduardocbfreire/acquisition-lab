@@ -1,9 +1,10 @@
 """Bloco 5 — métricas de razão (delta method)."""
 
 import numpy as np
+import pandas as pd
 import pytest
 
-from acquisition_lab.analysis.ratio import average_order_value
+from acquisition_lab.analysis.ratio import average_order_value, per_user_ticket
 from acquisition_lab.analysis.stats import bootstrap_ratio, ratio_delta_method
 from acquisition_lab.ingest import load_example
 
@@ -51,3 +52,30 @@ def test_runs_on_example_sales():
     assert res.bootstrap is not None
     # Delta method e bootstrap próximos no ponto.
     assert res.bootstrap[0] == pytest.approx(res.estimate.ratio, rel=0.02)
+    # As amostras do bootstrap acompanham o gráfico e batem com o IC percentil.
+    assert res.bootstrap_samples is not None
+    assert len(res.bootstrap_samples) == 2000
+    lo, hi = np.quantile(res.bootstrap_samples, [0.025, 0.975])
+    assert res.bootstrap[1] == pytest.approx(lo) and res.bootstrap[2] == pytest.approx(hi)
+
+
+def test_per_user_ticket_is_revenue_over_orders():
+    df = pd.DataFrame(
+        {
+            "user_id": ["a", "b", "c", "d"],
+            "revenue": [100.0, 60.0, 0.0, 90.0],
+            "orders": [2, 3, 0, 3],
+        }
+    )
+    tickets = per_user_ticket(df)
+    # Usuário 'c' (0 pedidos) fica de fora; demais = receita/pedidos.
+    assert sorted(tickets) == sorted([50.0, 20.0, 30.0])
+    assert len(tickets) == 3
+
+
+def test_per_user_ticket_runs_on_example():
+    df = load_example("sales")
+    tickets = per_user_ticket(df)
+    assert (tickets > 0).all()
+    # Só usuários com pelo menos 1 pedido entram.
+    assert len(tickets) == int((df["orders"] > 0).sum())

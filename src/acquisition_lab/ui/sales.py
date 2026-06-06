@@ -5,8 +5,12 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
-from ..analysis.ratio import average_order_value
-from ..viz.sales_viz import plot_ratio_intervals
+from ..analysis.ratio import average_order_value, per_user_ticket
+from ..viz.sales_viz import (
+    plot_bootstrap_distribution,
+    plot_ratio_intervals,
+    plot_ticket_distribution,
+)
 from .common import how_to_read, learn_more, missing_data_note
 from .i18n import fmt_brl, fmt_int, fmt_num, t
 
@@ -41,13 +45,19 @@ def render(df: pd.DataFrame | None) -> None:
         help=t("sales.metric.se_naive.help"),
     )
 
-    st.plotly_chart(plot_ratio_intervals(res), use_container_width=False)
+    st.plotly_chart(plot_ratio_intervals(res), use_container_width=True)
 
     if est.cov_xy > 0 and est.se < est.se_naive:
         st.info(t("sales.info_cov_reduces"))
     else:
         st.info(t("sales.info_cov_generic"))
 
+    # Distribuição do ticket por usuário (de onde a média sai).
+    tickets = per_user_ticket(df)
+    st.plotly_chart(plot_ticket_distribution(tickets, est), use_container_width=True)
+    st.caption(t("sales.dist_caption"))
+
+    # Bootstrap: distribuição das estimativas reamostradas vs IC do delta method.
     if res.bootstrap is not None:
         bp, blo, bhi = res.bootstrap
         st.caption(
@@ -58,6 +68,8 @@ def render(df: pd.DataFrame | None) -> None:
                 hi=fmt_brl(bhi, markdown=True),
             )
         )
+        st.plotly_chart(plot_bootstrap_distribution(res), use_container_width=True)
+        st.caption(t("sales.boot_dist_caption"))
 
     st.subheader(t("sales.sample_subheader"))
     st.dataframe(df.head(20), use_container_width=True, hide_index=True)

@@ -216,6 +216,10 @@ EN: dict[str, str] = {
     "sales.info_cov_generic": "The math accounts for revenue and orders moving "
     "together. Treating the order count as fixed gives the wrong margin.",
     "sales.boot_caption": "Resampling: {p}, 95% interval [{lo}, {hi}].",
+    "sales.dist_caption": "The distribution is usually skewed (many low tickets, a few "
+    "high ones) — that is why the average comes with an interval, not on its own.",
+    "sales.boot_dist_caption": "If the two bands all but coincide, the delta method "
+    "is validated.",
     "sales.sample_subheader": "A sample of the data",
     "sales.ref.delta": "Delta method for ratios: any *survey statistics* text on 'ratio "
     "estimators' explains why the denominator counts too.",
@@ -245,8 +249,17 @@ EN: dict[str, str] = {
     "viz.cp.disabled": "{message}",
     "viz.cp.segment_mean": "mean {mean}",
     "viz.sales.title": "Average order value = {ratio} · 95% interval by method",
-    "viz.sales.yaxis": "revenue per order",
+    "viz.sales.compare_xaxis": "average order value (R$)",
+    "viz.sales.compare_hover": "AOV {ratio} · margin ±{half}",
     "viz.sales.method.delta": "Delta method (with covariance)",
     "viz.sales.method.naive": "Naive (ignores covariance)",
-    "viz.sales.method.boot": "Resampling",
+    "viz.sales.dist.title": "Per-user order value distribution",
+    "viz.sales.dist.xaxis": "order value per user (R$)",
+    "viz.sales.dist.yaxis": "users",
+    "viz.sales.dist.aov_line": "average",
+    "viz.sales.boot.title": "Distribution of resampled estimates",
+    "viz.sales.boot.xaxis": "resampled average order value (R$)",
+    "viz.sales.boot.yaxis": "resamples",
+    "viz.sales.boot.band": "95% CI (bootstrap)",
+    "viz.sales.boot.delta": "95% CI (delta method)",
 }

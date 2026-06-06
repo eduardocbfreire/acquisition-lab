@@ -141,6 +141,26 @@ def ratio_delta_method(
     )
 
 
+def bootstrap_ratio_samples(
+    numerator: np.ndarray,
+    denominator: np.ndarray,
+    n_boot: int = 10000,
+    seed: int = 0,
+) -> np.ndarray:
+    """Distribuição bootstrap da razão: ``n_boot`` razões reamostradas.
+
+    Reamostra a unidade de agregação inteira (pares X_i, Y_i) com reposição.
+    Devolve o array das razões — base para o IC percentil e para visualizar a
+    distribuição. ``bootstrap_ratio`` deriva o IC daqui (mesma seed, mesmos números).
+    """
+    x = np.asarray(numerator, dtype=float)
+    y = np.asarray(denominator, dtype=float)
+    n = x.size
+    rng = np.random.default_rng(seed)
+    idx = rng.integers(0, n, size=(n_boot, n))
+    return x[idx].sum(axis=1) / y[idx].sum(axis=1)
+
+
 def bootstrap_ratio(
     numerator: np.ndarray,
     denominator: np.ndarray,
@@ -150,18 +170,12 @@ def bootstrap_ratio(
 ) -> tuple[float, float, float]:
     """Bootstrap da razão reamostrando a unidade de agregação inteira.
 
-    Validação OPCIONAL do delta method (não é o método primário). Reamostra
-    pares (X_i, Y_i) com reposição ``n_boot`` vezes e devolve
-    ``(ponto, lo, hi)`` pelos percentis.
+    Validação OPCIONAL do delta method (não é o método primário). Devolve
+    ``(ponto, lo, hi)`` pelos percentis da distribuição reamostrada.
     """
     x = np.asarray(numerator, dtype=float)
     y = np.asarray(denominator, dtype=float)
-    n = x.size
-    rng = np.random.default_rng(seed)
-    idx = rng.integers(0, n, size=(n_boot, n))
-    sums_x = x[idx].sum(axis=1)
-    sums_y = y[idx].sum(axis=1)
-    ratios = sums_x / sums_y
+    samples = bootstrap_ratio_samples(x, y, n_boot=n_boot, seed=seed)
     point = float(x.sum() / y.sum())
-    lo, hi = np.quantile(ratios, [alpha / 2, 1 - alpha / 2])
+    lo, hi = np.quantile(samples, [alpha / 2, 1 - alpha / 2])
     return point, float(lo), float(hi)

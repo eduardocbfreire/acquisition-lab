@@ -221,6 +221,10 @@ PT: dict[str, str] = {
     "sales.info_cov_generic": "O cálculo leva em conta que receita e pedidos variam "
     "juntos. Tratar o nº de pedidos como fixo dá uma margem errada.",
     "sales.boot_caption": "Reamostragem: {p}, intervalo de 95% [{lo}, {hi}].",
+    "sales.dist_caption": "A distribuição costuma ser assimétrica (muitos tickets "
+    "baixos, poucos altos) — por isso a média vem com intervalo, não sozinha.",
+    "sales.boot_dist_caption": "Se as duas faixas praticamente coincidem, o delta "
+    "method está validado.",
     "sales.sample_subheader": "Uma amostra dos dados",
     "sales.ref.delta": "Delta method para razões: qualquer texto de *survey statistics* "
     "sobre 'ratio estimators' explica por que o denominador também conta.",
@@ -250,8 +254,17 @@ PT: dict[str, str] = {
     "viz.cp.disabled": "{message}",
     "viz.cp.segment_mean": "média {mean}",
     "viz.sales.title": "Ticket médio = {ratio} · intervalo de 95% por método",
-    "viz.sales.yaxis": "receita por pedido",
+    "viz.sales.compare_xaxis": "ticket médio (R$)",
+    "viz.sales.compare_hover": "Ticket {ratio} · margem ±{half}",
     "viz.sales.method.delta": "Delta method (com covariância)",
     "viz.sales.method.naive": "Ingênua (ignora covariância)",
-    "viz.sales.method.boot": "Reamostragem",
+    "viz.sales.dist.title": "Distribuição do ticket por usuário",
+    "viz.sales.dist.xaxis": "ticket por usuário (R$)",
+    "viz.sales.dist.yaxis": "usuários",
+    "viz.sales.dist.aov_line": "ticket médio",
+    "viz.sales.boot.title": "Distribuição das estimativas reamostradas",
+    "viz.sales.boot.xaxis": "ticket médio reamostrado (R$)",
+    "viz.sales.boot.yaxis": "reamostragens",
+    "viz.sales.boot.band": "IC 95% (bootstrap)",
+    "viz.sales.boot.delta": "IC 95% (delta method)",
 }

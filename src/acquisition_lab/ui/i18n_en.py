@@ -18,6 +18,10 @@ EN: dict[str, str] = {
     "sidebar.rows_example": "{n} rows (example).",
     "sidebar.err_csv": "Problem in the {name} CSV: {detail}",
     "sidebar.err_unexpected": "Unexpected error reading {name}: {detail}",
+    # Streamlit's built-in uploader text, translated via CSS
+    "uploader.drag": "Drag and drop file here",
+    "uploader.limit": "Limit 200 MB per file • CSV",
+    "uploader.browse": "Browse files",
     # Dataset names
     "ds.funnel": "Funnel",
     "ds.cohort": "Cohort",
@@ -32,6 +36,7 @@ EN: dict[str, str] = {
     "tab.sales": "Sales",
     # Common
     "common.how_to_read": "How do I read this screen?",
+    "common.learn_more": "Learn more",
     "common.ci_n": "95% interval [{lo}, {hi}] · n = {n} ({count} of {total})",
     "common.ci_n_simple": "95% interval [{lo}, {hi}] · n = {n}",
     "common.cac_disclaimer": "Descriptive CAC, not causal: it is computed from "
@@ -140,11 +145,11 @@ EN: dict[str, str] = {
     # Change points
     "cp.caption": "Automatically finds the moments when a series shifts in level, in "
     "spread or in trend.",
-    "cp.help": "A change point is the moment a series shifts for good — the level "
-    "moves up or down and stays there. The method separates a real shift from "
-    "ordinary ups and downs: it ignores small jumps and only keeps what holds up "
-    "when we tighten the test. Use the controls to make the search more or less "
-    "sensitive.",
+    "cp.help": "What it is for: finding WHEN a metric shifted to a new level — say, "
+    "CAC stepping up after a certain week — automatically, without picking the date "
+    "by eye. The method separates a real shift from ordinary ups and downs: it ignores "
+    "small jumps and only keeps what holds up when the test tightens. Use the controls "
+    "to make the search more or less sensitive.",
     "cp.no_data": "Load Media or Cohort data to get series to analyze.",
     "cp.series_label": "Series",
     "cp.series.spend": "Media · daily spend",
@@ -155,12 +160,16 @@ EN: dict[str, str] = {
     "cp.cost.l2": "The level (mean)",
     "cp.cost.normal": "The spread",
     "cp.cost.linear": "The trend",
+    "cp.cost_help": "l2 detects a change in mean level; normal, in variance; linear, " "in trend.",
     "cp.k_label": "Sensitivity",
-    "cp.k_help": "Higher = stricter, finds fewer points.",
+    "cp.k_help": "Higher = fewer points, only the most obvious shifts. Start at 1.0 and "
+    "raise it if noise creeps in.",
     "cp.minsize_label": "Minimum spacing between points",
+    "cp.minsize_help": "Minimum number of points (days or weeks, depending on the "
+    "series) between two changes. Keeps a short wobble from being marked as a change.",
     "cp.detrend_label": "Remove trend first",
-    "cp.detrend_help": "Takes out the overall slope so a slow climb is not mistaken "
-    "for a level shift.",
+    "cp.detrend_help": "Removes the background trend before looking for steps. Use it "
+    "when the series climbs or falls continuously.",
     "cp.metric.cps": "Change points",
     "cp.metric.sigma": "Estimated noise",
     "cp.metric.sigma.help": "How much the series normally wiggles. It is the "
@@ -172,6 +181,13 @@ EN: dict[str, str] = {
     "cp.dropped_unstable": "Skipped for not holding up under a stricter test: {n}",
     "cp.min_points": "Needs at least {min} points; this series has {n}.",
     "cp.spinner": "Looking for change points…",
+    "cp.ref.ruptures": "Docs for **ruptures**, the library behind the detection — worth "
+    "a look at its examples and parameters "
+    "([ruptures-docs](https://centre-borelli.github.io/ruptures-docs/)).",
+    "cp.ref.truong": "Truong, Oudre & Vayatis (2020), *Selective review of offline "
+    "change point detection methods* — a friendly map of all the methods.",
+    "cp.ref.killick": "Killick, Fearnhead & Eckley (2012) — the PELT paper, the exact "
+    "algorithm running here under the hood.",
     # Sales
     "sales.caption": "Average order value (revenue divided by orders) with the margin "
     "of uncertainty done right, accounting for the fact that both move together.",
@@ -187,10 +203,12 @@ EN: dict[str, str] = {
     "interval is the margin of uncertainty.",
     "sales.metric.se": "Margin (done right)",
     "sales.metric.se.help": "Typical size of the estimate's error, accounting for "
-    "revenue and orders moving together.",
+    "revenue and order count moving together. This is the margin to trust.",
     "sales.metric.se_naive": "Margin (naive way)",
     "sales.metric.se_naive.help": "What you would get treating the order count as "
-    "fixed. Shown only for comparison — it usually gets the margin wrong.",
+    "fixed, ignoring that revenue and orders move together. Since they are usually "
+    "positively correlated, this margin comes out distorted. It is here only to show "
+    "how big that error is.",
     "sales.info_cov_reduces": "Revenue and orders move together: people who order "
     "more spend more. Accounting for that makes the margin narrower than the naive "
     "way suggests. With other data it can go the other way — the point is not to "
@@ -199,6 +217,10 @@ EN: dict[str, str] = {
     "together. Treating the order count as fixed gives the wrong margin.",
     "sales.boot_caption": "Resampling: {p}, 95% interval [{lo}, {hi}].",
     "sales.sample_subheader": "A sample of the data",
+    "sales.ref.delta": "Delta method for ratios: any *survey statistics* text on 'ratio "
+    "estimators' explains why the denominator counts too.",
+    "sales.ref.bootstrap": "Efron & Tibshirani, *An Introduction to the Bootstrap* — the "
+    "classic read on the resampling method used in the cross-check.",
     # Charts (viz)
     "viz.funnel.title": "Funnel — {entered} entries counted " "({excluded} partial ones left out)",
     "viz.funnel.n": "n = {n}",
@@ -224,7 +246,7 @@ EN: dict[str, str] = {
     "viz.cp.segment_mean": "mean {mean}",
     "viz.sales.title": "Average order value = {ratio} · 95% interval by method",
     "viz.sales.yaxis": "revenue per order",
-    "viz.sales.method.delta": "Done right",
-    "viz.sales.method.naive": "Naive way",
+    "viz.sales.method.delta": "Delta method (with covariance)",
+    "viz.sales.method.naive": "Naive (ignores covariance)",
     "viz.sales.method.boot": "Resampling",
 }

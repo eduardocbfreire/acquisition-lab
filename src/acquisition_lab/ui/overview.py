@@ -72,7 +72,12 @@ def render(data: dict[str, pd.DataFrame | None]) -> None:
                 help=t("overview.metric.aov.help"),
             )
             st.caption(
-                t("common.ci_n_simple", lo=fmt_brl(e.lo), hi=fmt_brl(e.hi), n=fmt_int(e.n_units))
+                t(
+                    "common.ci_n_simple",
+                    lo=fmt_brl(e.lo, markdown=True),
+                    hi=fmt_brl(e.hi, markdown=True),
+                    n=fmt_int(e.n_units),
+                )
             )
         else:
             st.metric(t("overview.metric.aov"), "—")

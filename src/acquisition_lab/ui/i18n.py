@@ -71,11 +71,23 @@ def fmt_int(value: float) -> str:
     return grouped.replace(",", ".") if get_lang() == "pt" else grouped
 
 
-def fmt_brl(value: float, casas: int = 2) -> str:
-    """Reais (PT 'R$ 1.234,56'; EN 'R$ 1,234.56'). A moeda é sempre real."""
+def fmt_num(value: float, casas: int = 2) -> str:
+    """Número decimal com vírgula em PT (1234.5 -> '1.234,50'; EN '1,234.50')."""
     if _is_nan(value):
         return "—"
     base = f"{value:,.{casas}f}"
     if get_lang() == "pt":
         base = base.replace(",", "X").replace(".", ",").replace("X", ".")
-    return f"R$ {base}"
+    return base
+
+
+def fmt_brl(value: float, casas: int = 2, markdown: bool = False) -> str:
+    """Reais (PT 'R$ 1.234,56'; EN 'R$ 1,234.56'). A moeda é sempre real.
+
+    Com ``markdown=True`` escapa o cifrão (``R\\$``): dois ``R$`` na mesma string
+    markdown viram fórmula LaTeX no Streamlit e quebram a renderização.
+    """
+    if _is_nan(value):
+        return "—"
+    prefix = "R\\$" if markdown else "R$"
+    return f"{prefix} {fmt_num(value, casas)}"

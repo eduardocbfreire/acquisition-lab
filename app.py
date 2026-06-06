@@ -22,6 +22,23 @@ from acquisition_lab.viz import theme
 st.set_page_config(page_title="Acquisition Lab", layout="wide")
 theme.activate()  # template Plotly terroso como default em todos os gráficos
 
+# Ordem das seções; as chaves são FIXAS (independentes de idioma) para o radio de
+# navegação sobreviver ao rerun e à troca de PT/EN.
+NAV_KEYS = ("overview", "funnel", "cohort", "media", "changepoints", "sales")
+
+
+# Cache de leitura de CSV: o ingest/ continua puro (sem Streamlit); o cache mora
+# aqui, na camada de UI. A chave inclui os bytes do upload, então muda quando o
+# arquivo muda. Torna o rerun (ex.: trocar de idioma) instantâneo.
+@st.cache_data(show_spinner=False)
+def _load_example_cached(key: str) -> pd.DataFrame:
+    return load_example(key)
+
+
+@st.cache_data(show_spinner=False)
+def _load_upload_cached(key: str, content: bytes) -> pd.DataFrame:
+    return load_csv(content, key)
+
 
 _LANG_BY_CHOICE = {"PT": "pt", "EN": "en"}
 _CHOICE_BY_LANG = {"pt": "PT", "en": "EN"}
@@ -30,6 +47,11 @@ _CHOICE_BY_LANG = {"pt": "PT", "en": "EN"}
 def _on_lang_change() -> None:
     """Copia a escolha do widget para o idioma persistente."""
     st.session_state["lang"] = _LANG_BY_CHOICE[st.session_state["lang_choice"]]
+
+
+def _on_nav_change() -> None:
+    """Copia a seção escolhida no radio para o estado persistente."""
+    st.session_state["section"] = st.session_state["nav"]
 
 
 def _select_language() -> None:
@@ -76,11 +98,11 @@ def _load_dataset(key: str) -> pd.DataFrame | None:
 
         try:
             if origin == "upload":
-                df = load_csv(source.getvalue(), key)
+                df = _load_upload_cached(key, source.getvalue())
                 st.success(t("sidebar.rows_upload", n=fmt_int(len(df))))
                 return df
             if origin == "exemplo":
-                df = load_example(key)
+                df = _load_example_cached(key)
                 st.success(t("sidebar.rows_example", n=fmt_int(len(df))))
                 return df
         except CsvValidationError as exc:
@@ -93,8 +115,8 @@ def _load_dataset(key: str) -> pd.DataFrame | None:
 
 
 def main() -> None:
+    _select_language()  # define o idioma antes do CSS, que traduz o uploader
     inject_css()
-    _select_language()
 
     st.title(t("app.title"))
     st.caption(t("app.caption"))
@@ -103,27 +125,33 @@ def main() -> None:
     st.sidebar.caption(t("sidebar.data_caption"))
     data = {key: _load_dataset(key) for key in ("funnel", "cohort", "media", "sales")}
 
-    tabs = st.tabs(
-        [
-            t("tab.overview"),
-            t("tab.funnel"),
-            t("tab.cohort"),
-            t("tab.media"),
-            t("tab.changepoints"),
-            t("tab.sales"),
-        ]
+    # Navegação estável: options são as chaves fixas; só o label passa por t(). A
+    # seção vive em session_state["section"] e o radio se reancora por ``index`` a
+    # cada execução — assim a aba sobrevive ao rerun e à troca de idioma (que dispara
+    # um on_change e, sozinha, resetaria um radio que dependesse só da key). O label
+    # do radio é estático e oculto: a chave fixa é o valor, não o texto exibido.
+    if "section" not in st.session_state:
+        st.session_state["section"] = "overview"
+    st.radio(
+        "nav",
+        NAV_KEYS,
+        index=NAV_KEYS.index(st.session_state["section"]),
+        format_func=lambda k: t(f"tab.{k}"),
+        horizontal=True,
+        key="nav",
+        on_change=_on_nav_change,
+        label_visibility="collapsed",
     )
-    renderers = (
-        lambda: overview.render(data),
-        lambda: funnel.render(data["funnel"]),
-        lambda: cohort.render(data["cohort"]),
-        lambda: media.render(data["media"]),
-        lambda: changepoints.render(data),
-        lambda: sales.render(data["sales"]),
-    )
-    for tab, render in zip(tabs, renderers):
-        with tab:
-            render()
+    section = st.session_state["section"]
+    renderers = {
+        "overview": lambda: overview.render(data),
+        "funnel": lambda: funnel.render(data["funnel"]),
+        "cohort": lambda: cohort.render(data["cohort"]),
+        "media": lambda: media.render(data["media"]),
+        "changepoints": lambda: changepoints.render(data),
+        "sales": lambda: sales.render(data["sales"]),
+    }
+    renderers[section]()
 
 
 if __name__ == "__main__":

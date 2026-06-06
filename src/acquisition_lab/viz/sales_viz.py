@@ -41,8 +41,12 @@ def plot_ratio_intervals(result: AovResult) -> go.Figure:
             error_y=dict(type="data", symmetric=False, array=his, arrayminus=los),
         )
     )
+    # Largura fixa e folga lateral no eixo x para os pontos ficarem próximos e
+    # comparáveis num olhar (sem espalhar pelos extremos de um gráfico largo).
     fig.update_layout(
         title=t("viz.sales.title", ratio=fmt_brl(est.ratio)),
         yaxis_title=t("viz.sales.yaxis"),
+        width=480,
+        xaxis=dict(range=[-0.6, len(methods) - 0.4]),
     )
     return fig

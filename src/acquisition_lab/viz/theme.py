@@ -16,6 +16,7 @@ TEMPLATE_NAME = "acquisition_lab"
 COLORWAY = ["#B85C38", "#6B705C", "#A98467", "#DDB892", "#582F0E", "#9C6644"]
 
 # Cores de chrome, espelham o .streamlit/config.toml.
+PRIMARY = COLORWAY[0]  # cor primária do tema (terracota), igual ao config.toml
 BACKGROUND = "#FAF7F2"
 SURFACE = "#EFE6DA"
 GRID = "#E6DCCD"

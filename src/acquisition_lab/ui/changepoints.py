@@ -8,7 +8,7 @@ import streamlit as st
 from ..analysis.changepoints import MIN_SERIES_LENGTH, detect_change_points
 from ..analysis.media import compute_cac
 from ..viz.changepoints_viz import plot_change_points
-from .common import how_to_read
+from .common import how_to_read, learn_more
 from .i18n import fmt_int, t
 
 COST_OPTIONS = ["l2", "normal", "linear"]
@@ -64,11 +64,14 @@ def render(data: dict[str, pd.DataFrame | None]) -> None:
             options=COST_OPTIONS,
             index=0,
             format_func=lambda c: t(f"cp.cost.{c}"),
+            help=t("cp.cost_help"),
         )
     with c2:
         k = st.slider(t("cp.k_label"), 0.5, 3.0, 1.0, 0.1, help=t("cp.k_help"))
     with c3:
-        min_size = st.slider(t("cp.minsize_label"), 2, 20, int(suggested_min))
+        min_size = st.slider(
+            t("cp.minsize_label"), 2, 20, int(suggested_min), help=t("cp.minsize_help")
+        )
     with c4:
         detrend = st.checkbox(t("cp.detrend_label"), value=False, help=t("cp.detrend_help"))
 
@@ -93,3 +96,5 @@ def render(data: dict[str, pd.DataFrame | None]) -> None:
         st.caption(t("cp.dropped_mag", n=fmt_int(len(res.dropped_low_magnitude))))
     if res.dropped_unstable:
         st.caption(t("cp.dropped_unstable", n=fmt_int(len(res.dropped_unstable))))
+
+    learn_more(["cp.ref.ruptures", "cp.ref.truong", "cp.ref.killick"])

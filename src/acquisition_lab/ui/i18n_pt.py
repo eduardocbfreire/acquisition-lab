@@ -24,6 +24,10 @@ PT: dict[str, str] = {
     "sidebar.rows_example": "{n} linhas (exemplo).",
     "sidebar.err_csv": "Problema no CSV de {name}: {detail}",
     "sidebar.err_unexpected": "Erro inesperado ao ler {name}: {detail}",
+    # Textos embutidos do uploader do Streamlit, traduzidos via CSS
+    "uploader.drag": "Arraste e solte o arquivo aqui",
+    "uploader.limit": "Limite de 200 MB por arquivo • CSV",
+    "uploader.browse": "Procurar arquivos",
     # Nomes dos conjuntos de dados
     "ds.funnel": "Funil",
     "ds.cohort": "Coorte",
@@ -38,6 +42,7 @@ PT: dict[str, str] = {
     "tab.sales": "Vendas",
     # Comuns
     "common.how_to_read": "Como ler esta tela?",
+    "common.learn_more": "Para entender mais",
     "common.ci_n": "Intervalo de 95% [{lo}, {hi}] · n = {n} ({count} de {total})",
     "common.ci_n_simple": "Intervalo de 95% [{lo}, {hi}] · n = {n}",
     "common.cac_disclaimer": CAC_DESCRIPTIVE_DISCLAIMER,
@@ -144,11 +149,11 @@ PT: dict[str, str] = {
     # Pontos de mudança
     "cp.caption": "Encontra automaticamente os momentos em que uma série muda de "
     "patamar, de variação ou de tendência.",
-    "cp.help": "Um ponto de mudança é o momento em que o comportamento de uma série "
-    "muda de forma duradoura — o nível sobe ou desce e fica assim. O método separa "
-    "a mudança de verdade do sobe-e-desce normal: ignora saltos pequenos e só "
-    "mantém o que se repete quando apertamos o critério. Use os controles para "
-    "deixar a busca mais ou menos sensível.",
+    "cp.help": "Para que serve: descobrir QUANDO uma métrica mudou de patamar — por "
+    "exemplo, o CAC que sobe de degrau depois de certa semana — de forma automática, "
+    "sem você escolher a data no olho. O método separa a mudança de verdade do "
+    "sobe-e-desce normal: ignora saltos pequenos e só mantém o que se repete quando o "
+    "critério aperta. Ajuste os controles para deixar a busca mais ou menos sensível.",
     "cp.no_data": "Carregue dados de Mídia ou Coorte para ter séries para analisar.",
     "cp.series_label": "Série",
     "cp.series.spend": "Mídia · gasto por dia",
@@ -159,12 +164,17 @@ PT: dict[str, str] = {
     "cp.cost.l2": "O patamar (média)",
     "cp.cost.normal": "A variação",
     "cp.cost.linear": "A tendência",
+    "cp.cost_help": "l2 detecta mudança de nível médio; normal, de variância; linear, "
+    "de tendência.",
     "cp.k_label": "Sensibilidade",
-    "cp.k_help": "Mais alto = mais exigente, encontra menos pontos.",
+    "cp.k_help": "Valores maiores = menos pontos, só as mudanças mais óbvias. Comece em "
+    "1.0 e aumente se vier ruído.",
     "cp.minsize_label": "Distância mínima entre pontos",
+    "cp.minsize_help": "Número mínimo de pontos (dias ou semanas, conforme a série) "
+    "entre duas mudanças. Evita marcar oscilação curta como mudança.",
     "cp.detrend_label": "Remover tendência antes",
-    "cp.detrend_help": "Tira a inclinação geral da série para não confundir subida "
-    "lenta com mudança de patamar.",
+    "cp.detrend_help": "Remove a tendência de fundo antes de procurar degraus. Use "
+    "quando a série sobe ou desce continuamente.",
     "cp.metric.cps": "Pontos de mudança",
     "cp.metric.sigma": "Ruído estimado",
     "cp.metric.sigma.help": "O quanto a série treme normalmente. Serve de régua para "
@@ -176,6 +186,13 @@ PT: dict[str, str] = {
     "cp.dropped_unstable": "Ignorados por não se repetirem num critério mais " "exigente: {n}",
     "cp.min_points": "Precisa de pelo menos {min} pontos; esta série tem {n}.",
     "cp.spinner": "Procurando pontos de mudança…",
+    "cp.ref.ruptures": "Documentação do **ruptures**, a biblioteca por trás da "
+    "detecção — vale ver os exemplos e parâmetros "
+    "([ruptures-docs](https://centre-borelli.github.io/ruptures-docs/)).",
+    "cp.ref.truong": "Truong, Oudre & Vayatis (2020), *Selective review of offline "
+    "change point detection methods* — um bom panorama de todos os métodos.",
+    "cp.ref.killick": "Killick, Fearnhead & Eckley (2012) — o artigo do PELT, o "
+    "algoritmo exato que roda aqui por baixo.",
     # Vendas
     "sales.caption": "Ticket médio (receita dividida por pedidos) com a margem de "
     "incerteza calculada do jeito certo, levando em conta que os dois variam juntos.",
@@ -191,10 +208,12 @@ PT: dict[str, str] = {
     "é a margem de incerteza.",
     "sales.metric.se": "Margem (forma correta)",
     "sales.metric.se.help": "Tamanho típico do erro da estimativa, levando em conta "
-    "que receita e pedidos variam juntos.",
+    "que receita e número de pedidos variam juntos. É a margem em que confiar.",
     "sales.metric.se_naive": "Margem (forma ingênua)",
-    "sales.metric.se_naive.help": "O que daria se tratássemos o nº de pedidos como "
-    "fixo. Mostrado só para comparar — costuma errar a margem.",
+    "sales.metric.se_naive.help": "O que daria tratando o número de pedidos como fixo, "
+    "ignorando que receita e pedidos variam juntos. Como costumam ser positivamente "
+    "correlacionados, essa margem sai distorcida. Está aqui só para mostrar o tamanho "
+    "do erro de ignorar isso.",
     "sales.info_cov_reduces": "Receita e pedidos andam juntos: quem faz mais pedidos "
     "gasta mais. Levar isso em conta deixa a margem mais estreita do que a forma "
     "ingênua sugere. Em outros dados pode ser o contrário — o importante é não "
@@ -203,6 +222,10 @@ PT: dict[str, str] = {
     "juntos. Tratar o nº de pedidos como fixo dá uma margem errada.",
     "sales.boot_caption": "Reamostragem: {p}, intervalo de 95% [{lo}, {hi}].",
     "sales.sample_subheader": "Uma amostra dos dados",
+    "sales.ref.delta": "Delta method para razões: qualquer texto de *survey statistics* "
+    "sobre 'ratio estimators' explica por que o denominador também conta.",
+    "sales.ref.bootstrap": "Efron & Tibshirani, *An Introduction to the Bootstrap* — a "
+    "leitura clássica do método de reamostragem usado na conferência.",
     # Gráficos (viz)
     "viz.funnel.title": "Funil — {entered} entradas consideradas " "({excluded} parciais de fora)",
     "viz.funnel.n": "n = {n}",
@@ -228,7 +251,7 @@ PT: dict[str, str] = {
     "viz.cp.segment_mean": "média {mean}",
     "viz.sales.title": "Ticket médio = {ratio} · intervalo de 95% por método",
     "viz.sales.yaxis": "receita por pedido",
-    "viz.sales.method.delta": "Forma correta",
-    "viz.sales.method.naive": "Forma ingênua",
+    "viz.sales.method.delta": "Delta method (com covariância)",
+    "viz.sales.method.naive": "Ingênua (ignora covariância)",
     "viz.sales.method.boot": "Reamostragem",
 }

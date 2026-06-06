@@ -1,36 +1,37 @@
 # acquisition-lab
 
-<!-- Troque OWNER pelo seu usuário/organização do GitHub para os badges funcionarem. -->
-[![CI](https://github.com/OWNER/acquisition-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/acquisition-lab/actions/workflows/ci.yml)
+**English** · [Português](README.pt-BR.md)
+
+[![CI](https://github.com/eduardocbfreire/acquisition-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/eduardocbfreire/acquisition-lab/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-A98467.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-B85C38.svg)](https://www.python.org/)
 
-Ferramenta **local** para analisar aquisição. Você sobe seus CSVs de funil,
-coorte, mídia e vendas (ou usa os exemplos que já vêm no projeto) e vê conversão,
-retenção, CAC e ticket médio. Toda taxa aparece com **a margem de incerteza
-(intervalo de confiança) e o número de casos (n) ao lado** — a ideia é olhar a
-faixa, não só o número solto. Roda em Streamlit, no seu computador, sem chave de
-API nem serviço externo.
+A **local** tool for acquisition analysis. Upload your funnel, cohort, media and
+sales CSVs (or use the examples bundled with the project) and see conversion,
+retention, CAC and average order value. Every rate is shown with **its margin of
+uncertainty (confidence interval) and sample size (n) right next to it** — the
+point is to read the range, not just the number. Runs on Streamlit, on your own
+machine, with no API keys and no external services.
 
-A interface fala **português e inglês** (botão no topo da barra lateral) e vem
-num tema de **tons terrosos**. A paleta e o template dos gráficos ficam num só
-lugar (`src/acquisition_lab/viz/theme.py`); os textos, num só dicionário
-(`src/acquisition_lab/ui/i18n_pt.py` e `i18n_en.py`).
+The interface is available in **English and Portuguese**; the toggle sits at the
+top of the sidebar. The earthy color palette lives in a single module
+(`src/acquisition_lab/viz/theme.py`), and every UI string lives in
+`src/acquisition_lab/ui/i18n_en.py` and `i18n_pt.py`.
 
 ---
 
-## Começando em 3 minutos
+## Getting started in 3 minutes
 
-Para quem nunca usou. Você precisa de Python 3.11 ou mais novo.
+For first-time users. You need Python 3.11 or newer.
 
-1. Clone o projeto e entre na pasta:
+1. Clone the project and enter the folder:
    ```bash
-   git clone https://github.com/OWNER/acquisition-lab.git
+   git clone https://github.com/eduardocbfreire/acquisition-lab.git
    cd acquisition-lab
    ```
-2. Crie e ative um ambiente virtual.
+2. Create and activate a virtual environment.
 
-   Linux ou macOS:
+   Linux or macOS:
    ```bash
    python -m venv .venv
    source .venv/bin/activate
@@ -40,29 +41,29 @@ Para quem nunca usou. Você precisa de Python 3.11 ou mais novo.
    python -m venv .venv
    .venv\Scripts\Activate.ps1
    ```
-3. Instale as dependências:
+3. Install the dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-4. Rode o app:
+4. Run the app:
    ```bash
    streamlit run app.py
    ```
-5. O navegador abre em http://localhost:8501. Se não abrir sozinho, cole esse endereço.
-6. Na barra lateral, marque "usar exemplo" em cada conjunto e explore com os dados
-   sintéticos que já vêm no projeto.
-7. Para analisar seus próprios dados, desmarque "usar exemplo" e suba o CSV no
-   formato da seção [Formato esperado de cada CSV](#formato-esperado-de-cada-csv).
+5. Your browser opens at http://localhost:8501. If it doesn't, paste that address.
+6. In the sidebar, check "use example" for each dataset and explore with the
+   synthetic data that ships with the project.
+7. To analyze your own data, uncheck "use example" and upload a CSV in the format
+   described in [Expected CSV formats](#expected-csv-formats).
 
-Troque o idioma da interface (PT/EN) no topo da barra lateral.
+Switch the interface language (PT/EN) at the top of the sidebar.
 
-### Outros comandos
+### Other commands
 
-Regerar os dados de exemplo (determinístico, mesma semente sempre):
+Regenerate the example data (deterministic, fixed seed):
 ```bash
 python data/generate_synthetic.py
 ```
-Rodar os testes:
+Run the tests:
 ```bash
 pip install -r requirements-dev.txt
 pytest
@@ -70,85 +71,85 @@ pytest
 
 ---
 
-## Telas
+## Screens
 
-São seis abas. Cada uma abre com um "Como ler esta tela?" para quem não é da área.
+Six tabs. Each one opens with a "How to read this screen?" explainer for
+non-specialists.
 
-- **Visão geral**: os números principais lado a lado (conversão de ponta a ponta,
-  retenção do 1º período, CAC médio, ticket médio), cada um com intervalo e n.
-- **Funil**: conversão por etapa, contando pessoas (não eventos), com intervalo de
-  Wilson 95%. Quem entrou há pouco e ainda não teve tempo de converter fica fora
-  da conta, para não puxar as taxas para baixo.
-- **Coorte**: matriz de retenção por grupo de entrada e tempo decorrido. Cada
-  célula tem taxa, n e intervalo. Células ainda não observadas ficam em branco —
-  não viram zero.
-- **Mídia**: CAC por semana, já alinhando o atraso entre gasto e conversão, com os
-  pontos de mudança marcados. Mostra sempre o aviso de que **o CAC é descritivo,
-  não causal** (ver Metodologia).
-- **Pontos de mudança** (change points): detecção interativa (PELT/ruptures) sobre
-  séries dos dados — gasto, conversões, CAC, novos cadastros — com controles de
-  sensibilidade, distância mínima e remoção de tendência.
-- **Vendas**: ticket médio (receita ÷ pedidos) como métrica de razão, com a
-  incerteza pelo **delta method** (já com o termo de covariância) e uma conferência
-  opcional por bootstrap.
+- **Overview**: the key numbers side by side (end-to-end conversion, period-1
+  retention, average CAC, average order value), each with its interval and n.
+- **Funnel**: conversion per step, counting people (not events), with 95% Wilson
+  intervals. Users who signed up too recently to have had a chance to convert are
+  left out of the denominators, so they don't drag the rates down.
+- **Cohort**: retention matrix by entry group and elapsed time. Each cell shows
+  rate, n and interval. Cells not yet observed stay blank — they don't become zero.
+- **Media**: weekly CAC with the lag between spend and conversion already aligned,
+  and change points marked on the series. Always displays the warning that
+  **CAC is descriptive, not causal** (see Methodology).
+- **Change points**: interactive detection (PELT/ruptures) over series derived
+  from the data — spend, conversions, CAC, new signups — with controls for
+  sensitivity, minimum distance and detrending.
+- **Sales**: average order value (revenue ÷ orders) as a ratio metric, with
+  uncertainty via the **delta method** (covariance term included) and an optional
+  bootstrap cross-check.
 
 ---
 
 ## Screenshots
 
-As imagens da interface ficam em `docs/screenshots/`. Para gerar a sua: rode o
-app, abra a aba "Visão geral" com os dados de exemplo e salve um print nessa pasta.
+Interface images live in `docs/screenshots/`. To produce yours: run the app, open
+the Overview tab with the example data and save a screenshot to that folder.
 
 ---
 
-## Privacidade dos dados
+## Data privacy
 
-Tudo roda na sua máquina. Os CSVs que você sobe ficam só na memória durante a
-sessão: nada é gravado em disco nem enviado para nenhum serviço. Feche a aba e os
-dados somem. Os únicos arquivos de dados no repositório são os exemplos sintéticos
-de `data/`, criados por script.
+Everything runs on your machine. Uploaded CSVs stay in memory for the duration of
+the session: nothing is written to disk or sent to any service. Close the tab and
+the data is gone. The only data files in the repository are the synthetic examples
+in `data/`, generated by script.
 
 ---
 
-## Formato esperado de cada CSV
+## Expected CSV formats
 
-A validação no upload checa colunas e tipos e dá mensagem de erro clara quando o
-formato está errado. Cabeçalho e uma linha de exemplo por arquivo:
+Upload validation checks columns and types and returns a clear error message when
+the format is wrong. Header plus one example row per file:
 
-### Funil — `funnel.csv`
-**O que é:** o caminho de cada pessoa pelas etapas do produto (visita, cadastro,
-compra...).
+### Funnel — `funnel.csv`
+**What it is:** each person's path through the product steps (visit, signup,
+purchase...).
 
-Formato longo: uma linha por (usuário, etapa atingida). Denominadores são sempre
-usuários únicos, nunca eventos.
+Long format: one row per (user, step reached). Denominators are always unique
+users, never events.
 ```
 user_id,step,event_time
 u000001,signup,2026-01-15 09:32:10
 ```
 
-### Coorte — `cohort.csv`
-**O que é:** quando cada pessoa entrou e em que dias ela voltou a usar o produto.
+### Cohort — `cohort.csv`
+**What it is:** when each person joined and on which days they came back.
 
-Uma linha por atividade qualificadora do usuário. `signup_date` define a coorte;
-`activity_date` marca o evento de retenção no período relativo.
+One row per qualifying user activity. `signup_date` defines the cohort;
+`activity_date` marks the retention event in the relative period.
 ```
 user_id,signup_date,activity_date
 c000001,2026-01-12,2026-02-09
 ```
 
-### Mídia — `media_spend.csv`
-**O que é:** quanto se gastou em mídia por dia e quantas aquisições vieram.
+### Media — `media_spend.csv`
+**What it is:** daily media spend and the acquisitions attributed to it.
 
-Série diária de gasto e aquisições atribuídas.
+Daily series of spend and attributed acquisitions.
 ```
 date,spend,conversions
 2026-01-15,2243.10,52
 ```
 
-### Vendas — `sales.csv`
-**O que é:** quanto cada pessoa gastou e quantos pedidos fez.
+### Sales — `sales.csv`
+**What it is:** how much each person spent and how many orders they placed.
 
-Uma linha por usuário (unidade de agregação), com receita e número de pedidos.
+One row per user (the aggregation unit), with revenue and order count.
 ```
 user_id,revenue,orders
 s000001,165.56,2
@@ -156,97 +157,99 @@ s000001,165.56,2
 
 ---
 
-## Metodologia
+## Methodology
 
-Os métodos abaixo são a fonte da verdade do projeto. Cada bloco é um módulo de
-análise puro em `src/acquisition_lab/analysis/`, testável sem subir o app.
+The methods below are the project's source of truth. Each block is a pure
+analysis module in `src/acquisition_lab/analysis/`, testable without launching
+the app.
 
 ### 1. Change points (`changepoints.py`)
-PELT (Pruned Exact Linear Time) via **ruptures**, modo offline, segmentação
-múltipla. Custo padrão `l2` (mudança de nível/média); `normal` (variância) e
-`linear` (tendência) como opções. Penalidade estilo BIC, proporcional a `log(n)`:
-`beta = k · d · sigma2 · log(n)`, com `d=1` (univariada), `sigma2` estimado de
-forma robusta pela MAD dos primeiros diffs e `k=1.0` por padrão. Defaults:
-`min_size=7` (diário; 4 para semanal), `jump=1`, série mínima de 30 pontos para
-habilitar a detecção. Defesas contra excesso de pontos: penalidade BIC, `min_size`,
-filtro de magnitude mínima (descarta quebras com salto de média < 1 MAD) e teste
-de estabilidade (re-roda com `k=1.5` e mantém só os pontos persistentes). Para
-séries com tendência forte, há opção de detrend antes do `l2` ou uso do custo
-`linear`.
+PELT (Pruned Exact Linear Time) via **ruptures**, offline mode, multiple
+segmentation. Default cost `l2` (level/mean shift); `normal` (variance) and
+`linear` (trend) as options. BIC-style penalty proportional to `log(n)`:
+`beta = k · d · sigma2 · log(n)`, with `d=1` (univariate), `sigma2` estimated
+robustly from the MAD of first differences, and `k=1.0` by default. Defaults:
+`min_size=7` (daily; 4 for weekly), `jump=1`, minimum series length of 30 points
+to enable detection. Defenses against spurious points: the BIC penalty,
+`min_size`, a minimum-magnitude filter (drops breaks with a mean shift < 1 MAD)
+and a stability check (re-runs with `k=1.5` and keeps only persistent points).
+For strongly trending series there's an option to detrend before `l2`, or to use
+the `linear` cost.
 
-### 2. Funil (`funnel.py`)
-Conversão por etapa como proporção de **usuários únicos** que avançam (passo a
-passo e ponta a ponta), nunca eventos. Incerteza por **IC de Wilson** (score) 95%
-via `statsmodels.stats.proportion.proportion_confint(method="wilson")`, nunca Wald.
-O n absoluto acompanha cada taxa. O IC ponta a ponta é calculado direto sobre
-entrada e saída — não é o produto dos IC das etapas (que não são independentes).
-Coortes parciais (quem entrou perto do fim da janela) são excluídas dos
-denominadores.
+### 2. Funnel (`funnel.py`)
+Per-step conversion as the proportion of **unique users** who advance (step by
+step and end to end), never events. Uncertainty via 95% **Wilson** (score)
+intervals from `statsmodels.stats.proportion.proportion_confint(method="wilson")`,
+never Wald. The absolute n accompanies every rate. The end-to-end CI is computed
+directly on entry and exit counts — it is not the product of per-step CIs (which
+are not independent). Partial cohorts (users who joined near the end of the
+window) are excluded from denominators.
 
-### 3. Coorte / retenção (`cohort.py`)
-Coorte definida pelo período de aquisição (semana de signup por padrão); retenção
-em períodos relativos desde a aquisição (0 a 12, ajustável). Célula =
-`retidos_n / tamanho_da_coorte`, com taxa, n e IC de Wilson 95%. Matriz triangular:
-coortes recentes têm menos períodos observados, e células não maduras **não são
-imputadas** (ficam ausentes). Não se comparam células de maturidades diferentes,
-e o tempo é sempre relativo à aquisição, nunca calendário.
+### 3. Cohort / retention (`cohort.py`)
+Cohorts defined by acquisition period (signup week by default); retention in
+relative periods since acquisition (0 to 12, adjustable). Cell =
+`retained_n / cohort_size`, with rate, n and 95% Wilson CI. Triangular matrix:
+recent cohorts have fewer observed periods, and immature cells are **not
+imputed** (they stay missing). Cells of different maturities are never compared,
+and time is always relative to acquisition, never calendar time.
 
-### 4. Mídia vs resultado (`media.py`)
-`CAC(t) = gasto / aquisições atribuídas`, agregado por semana, com defasagem fixa
-entre gasto e conversão. A defasagem é estimada por **correlação cruzada** (teto de
-30 dias) e as aquisições são deslocadas para trás antes da divisão; a defasagem
-usada é sempre reportada. A detecção de change points do bloco 1 roda sobre a série
-de CAC.
+### 4. Media vs outcome (`media.py`)
+`CAC(t) = spend / attributed acquisitions`, aggregated weekly, with a fixed lag
+between spend and conversion. The lag is estimated by **cross-correlation**
+(capped at 30 days) and acquisitions are shifted back before the division; the
+lag in use is always reported. The change point detection from block 1 runs on
+the CAC series.
 
-> **CAC é descritivo, não causal.** O CAC calculado de conversões atribuídas está
-> contaminado por confundimento: demanda e sazonalidade movem tanto o gasto quanto
-> as conversões. Atribuição **não** é incrementalidade. Medir incrementalidade
-> exige experimento geográfico ou controle sintético, fora do escopo de uma análise
-> descritiva de CSV. O app exibe esse rótulo em todo lugar que mostra CAC, e ele
-> não deve ser removido nem suavizado.
+> **CAC is descriptive, not causal.** CAC computed from attributed conversions is
+> contaminated by confounding: demand and seasonality move both spend and
+> conversions. Attribution is **not** incrementality. Measuring incrementality
+> requires a geo experiment or synthetic control, which is outside the scope of a
+> descriptive CSV analysis. The app shows this label everywhere CAC appears, and
+> it should not be removed or softened.
 
-### 5. Métricas de razão (`ratio.py`, `stats.py`)
-Variância de razões (R = X/Y) pelo **delta method**, usada na aba Vendas para o
-ticket médio (AOV = receita total / pedidos totais). O denominador é variável
-aleatória, então a variância considera variância do numerador, do denominador **e
-a covariância** entre eles, na unidade de agregação correta (o usuário):
+### 5. Ratio metrics (`ratio.py`, `stats.py`)
+Variance of ratios (R = X/Y) via the **delta method**, used in the Sales tab for
+average order value (AOV = total revenue / total orders). The denominator is a
+random variable, so the variance accounts for the numerator variance, the
+denominator variance **and the covariance** between them, at the correct
+aggregation unit (the user):
 
 ```
 var(R) ≈ (1 / mean_y²) · ( var_x − 2·R·cov_xy + R²·var_y ) / n
 ```
 
-IC 95% como `R ± 1.96·sqrt(var(R))`. Receita e pedidos costumam ser positivamente
-correlacionados; ignorar a covariância (tratar o denominador como constante) dá um
-IC enviesado. Bootstrap (10.000 reamostragens, reamostrando o usuário inteiro)
-fica disponível como validação opcional via toggle, não como método primário.
+95% CI as `R ± 1.96·sqrt(var(R))`. Revenue and orders are usually positively
+correlated; ignoring the covariance (treating the denominator as constant) yields
+a biased CI. Bootstrap (10,000 resamples, resampling whole users) is available as
+an optional validation via a toggle, not as the primary method.
 
 ---
 
-## Arquitetura
+## Architecture
 
 ```
 acquisition-lab/
-├── app.py                       # entrypoint Streamlit (só monta as abas)
+├── app.py                       # Streamlit entrypoint (only assembles the tabs)
 ├── data/
-│   ├── generate_synthetic.py    # gerador determinístico dos exemplos
-│   └── *.csv                    # exemplos sintéticos
+│   ├── generate_synthetic.py    # deterministic example generator
+│   └── *.csv                    # synthetic examples
 ├── src/acquisition_lab/
-│   ├── ingest/                  # leitura + validação de CSV (schemas, loaders)
-│   ├── analysis/                # funções puras, um módulo por bloco da spec
-│   ├── viz/                     # figuras plotly puras
-│   └── ui/                      # camada Streamlit (única que importa streamlit)
-└── tests/                       # um arquivo de teste por bloco
+│   ├── ingest/                  # CSV reading + validation (schemas, loaders)
+│   ├── analysis/                # pure functions, one module per spec block
+│   ├── viz/                     # pure plotly figures
+│   └── ui/                      # Streamlit layer (the only one importing streamlit)
+└── tests/                       # one test file per block
 ```
 
-As funções de análise são puras (recebem DataFrame, devolvem resultado) e
-separadas da camada Streamlit, então dá para testar tudo sem subir o app.
+Analysis functions are pure (take a DataFrame, return a result) and separate from
+the Streamlit layer, so everything can be tested without launching the app.
 
-## Bibliotecas
+## Libraries
 
-pandas, numpy (ingestão e manipulação); ruptures (PELT); statsmodels (IC de Wilson,
-ajuste de tendência); scipy (distribuições, estatística); streamlit (interface
-local); plotly (gráficos interativos).
+pandas, numpy (ingestion and wrangling); ruptures (PELT); statsmodels (Wilson
+CIs, trend fitting); scipy (distributions, statistics); streamlit (local
+interface); plotly (interactive charts).
 
-## Licença
+## License
 
-MIT — veja [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE).

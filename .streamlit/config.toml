@@ -1,0 +1,12 @@
+# Tema em tons terrosos. A paleta dos gráficos vive em
+# src/acquisition_lab/viz/theme.py (fonte única); aqui ficam só as cores do
+# chrome do Streamlit, espelhando esse tema.
+[theme]
+primaryColor = "#B85C38"
+backgroundColor = "#FAF7F2"
+secondaryBackgroundColor = "#EFE6DA"
+textColor = "#3E2F23"
+
+# Trava o tema: esconde o menu de configurações onde dava para trocar tema.
+[client]
+toolbarMode = "minimal"

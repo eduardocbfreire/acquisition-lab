@@ -30,3 +30,4 @@ Primeira versão pública.
 - CI no GitHub Actions: ruff (lint + format) e pytest em Python 3.11.
 
 [0.1.0]: https://github.com/OWNER/acquisition-lab/releases/tag/v0.1.0
+
